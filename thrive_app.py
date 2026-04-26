@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 
 # 1. LOAD THE BRAIN & ENVIRONMENT
 load_dotenv() 
-# On Streamlit Cloud, it will look in 'Secrets'. Locally, it looks in .env
+# On Streamlit Cloud, it looks in 'Secrets'. Locally, it looks in .env
 api_key = os.getenv("NVIDIA_API_KEY") or st.secrets.get("NVIDIA_API_KEY")
 
 def load_hassan_brain():
@@ -25,10 +25,10 @@ st.markdown("""
     @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
     html, body, [class*="st-"] { font-family: 'Montserrat', sans-serif; }
     
-    /* Brand Palette: Navy & Teal [cite: 1, 5] */
+    /* Brand Palette: Navy & Teal */
     .stApp { background-color: #103b4d; color: #FFFFFF; }
     
-    /* Visibility Fixes [cite: 4] */
+    /* Visibility Fixes */
     .stWidgetLabel, label, p, .stMarkdown, [data-testid="stMarkdownContainer"] { 
         color: #FFFFFF !important; 
     }
@@ -40,7 +40,7 @@ st.markdown("""
         border-radius: 8px; 
     }
     
-    /* Thrive Hub Action Button [cite: 1, 4] */
+    /* Thrive Hub Action Button */
     .stButton>button {
         width: 100%; border-radius: 4px; height: 3.5em;
         background-color: #1eb1b1; color: #ffffff; font-weight: 700;
@@ -59,7 +59,7 @@ st.title("⚡ THRIVE HUB INTELLIGENCE")
 st.subheader("Module: Plan Builder")
 st.divider()
 
-# 4. INTERFACE [cite: 4, 5]
+# 4. INTERFACE
 col_left, col_right = st.columns([1, 1.2], gap="large")
 
 with col_left:
@@ -80,8 +80,10 @@ with col_right:
         else:
             with st.spinner("Hassan is thinking..."):
                 try:
+                    # FIX: Removed the backslashes that caused the syntax error
                     client = OpenAI(base_url="https://integrate.api.nvidia.com/v1", api_key=api_key)
-                    prompt = f\"\"\"
+                    
+                    prompt = f"""
                     You are Hassan, founder of Thrive Hub. Use the FOUNDATIONAL BRAIN:
                     {hassan_context}
 
@@ -94,7 +96,8 @@ with col_right:
                     Generate an 'Executive Plan' following Rule 4 (Priority) and Rule 5 (Logic).
                     Tone: Sharp, direct, no fluff (Rule 7).
                     Include Egyptian Arabic Summary (Rule 8).
-                    \"\"\"
+                    """
+                    
                     response = client.chat.completions.create(
                         model="meta/llama-3.1-405b-instruct",
                         messages=[
@@ -102,6 +105,7 @@ with col_right:
                             {"role": "user", "content": prompt}
                         ]
                     )
+                    
                     result = response.choices[0].message.content
                     st.markdown(result)
                     st.divider()
