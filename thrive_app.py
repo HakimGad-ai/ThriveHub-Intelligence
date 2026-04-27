@@ -25,7 +25,6 @@ st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800&display=swap');
     
-    /* Global Reset */
     html, body, [class*="st-"] { 
         font-family: 'Montserrat', sans-serif !important; 
     }
@@ -35,23 +34,14 @@ st.markdown("""
         color: #FFFFFF; 
     }
     
-    /* FIX: Ensure all headers and labels are bright white and visible */
     h1, h2, h3, h4, h5, h6, label, p, .stMarkdown {
         color: #FFFFFF !important;
         font-weight: 700;
     }
 
-    /* Input Area Styling */
-    .stTextArea textarea { 
-        background-color: #ffffff !important; 
-        color: #103b4d !important; 
-        border-radius: 8px; 
-        font-weight: 400 !important;
-    }
-
-    /* --- HARMONIZED BOX SYSTEM --- */
+    /* --- MOBILE RESPONSIVE LOGIC --- */
     
-    /* 1. Main Title Box */
+    /* Desktop Version (Default) */
     .main-title-box {
         background-color: #1eb1b1;
         color: #ffffff !important;
@@ -61,10 +51,8 @@ st.markdown("""
         font-weight: 800;
         display: inline-block;
         text-align: center;
-        line-height: 1.2;
     }
 
-    /* 2. Plan Builder Tag */
     .tag-box {
         background-color: #1eb1b1;
         color: #ffffff !important;
@@ -76,46 +64,61 @@ st.markdown("""
         margin-top: 10px;
     }
 
-    /* 3. Generate Plan Button (Matching Title Box Logic) */
+    /* Mobile Adjustments (Screen width less than 768px) */
+    @media (max-width: 768px) {
+        .main-title-box {
+            font-size: 1.4rem !important; /* Smaller text for mobile */
+            padding: 10px 20px !important;
+            width: 90% !important; /* Prevent overlapping */
+            margin: 10px auto !important;
+        }
+        .tag-box {
+            font-size: 0.8rem !important;
+            padding: 5px 15px !important;
+        }
+        .stImage > img {
+            width: 70px !important; /* Smaller logo for mobile */
+        }
+    }
+
+    /* Button Consistency */
     div.stButton > button {
         width: 100% !important; 
         background-color: #1eb1b1 !important; 
         border-radius: 8px !important;
         height: 4em !important;
         border: none !important;
-        transition: 0.3s;
     }
-    
     div.stButton > button p {
         color: #ffffff !important; 
         font-weight: 800 !important;
-        font-size: 1.2rem !important;
-        margin: 0 !important;
+        font-size: 1.1rem !important;
     }
 
-    div.stButton > button:hover { 
-        background-color: #179393 !important; 
+    .stTextArea textarea { 
+        background-color: #ffffff !important; 
+        color: #103b4d !important; 
+        border-radius: 8px; 
     }
 
-    hr { border-top: 2px solid #1eb1b1; opacity: 0.2; margin: 20px 0; }
+    hr { border-top: 2px solid #1eb1b1; opacity: 0.2; }
     </style>
     """, unsafe_allow_html=True)
 
-# 3. HEADER SECTION
-# Balancing the top: Logo/Tag on Left, Large Title Centered
-h_left, h_mid, h_right = st.columns([1, 3, 1])
+# 3. HEADER SECTION (Optimized for Mobile Stacking)
+# On mobile, Streamlit columns stack. We ensure the layout follows a clean order.
+if os.path.exists("Logo.png"):
+    try:
+        img = Image.open("Logo.png")
+        # Centering for mobile
+        st.markdown('<div style="text-align: left;">', unsafe_allow_html=True)
+        st.image(img, width=100)
+        st.markdown('</div>', unsafe_allow_html=True)
+    except:
+        pass
 
-with h_left:
-    if os.path.exists("Logo.png"):
-        try:
-            img = Image.open("Logo.png")
-            st.image(img, width=110)
-        except:
-            st.write("")
-    st.markdown('<div class="tag-box">Plan Builder</div>', unsafe_allow_html=True)
-
-with h_mid:
-    st.markdown('<div style="text-align: center;"><div class="main-title-box">Thrive Hub Intelligence</div></div>', unsafe_allow_html=True)
+st.markdown('<div class="tag-box">Plan Builder</div>', unsafe_allow_html=True)
+st.markdown('<div style="text-align: center; margin-top: 20px;"><div class="main-title-box">Thrive Hub Intelligence</div></div>', unsafe_allow_html=True)
 
 st.divider()
 
@@ -126,18 +129,18 @@ with col_left:
     st.markdown("### Input Data")
     client_data = st.text_area(
         label="Paste Chat History or Assessment Data:", 
-        height=450, 
-        placeholder="e.g., Male, 39, Corporate role, high stress..."
+        height=400, 
+        placeholder="e.g., Male, 39, Corporate role..."
     )
     
     if st.button("Generate Plan"):
         if not client_data:
             st.warning("Please enter client data first.")
         else:
-            with st.spinner("Hassan is building the protocol..."):
+            with st.spinner("Processing..."):
                 try:
                     client = OpenAI(base_url="https://integrate.api.nvidia.com/v1", api_key=api_key)
-                    prompt = f"System: Use {hassan_context}. Input: {client_data}. Task: Generate Plan (Rule 4, 5, 7, 8)."
+                    prompt = f"System: Use {hassan_context}. Input: {client_data}. Task: Generate Plan."
                     response = client.chat.completions.create(
                         model="meta/llama-3.1-405b-instruct",
                         messages=[{"role": "user", "content": prompt}]
@@ -153,5 +156,4 @@ with col_right:
         st.divider()
         st.code(st.session_state.result, language="markdown")
     else:
-        # Fixed visibility for the helper info box
-        st.info("Provide client details on the left to generate the protocol.")
+        st.info("Results will appear here.")
