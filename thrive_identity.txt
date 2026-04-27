@@ -13,3 +13,27 @@ PHILOSOPHY:
 Nutrition: Protein first. Fasting is a tool, not a magic fix.
 Rhythm: Consistency over intensity.
 Friction: Identify where the structure is slipping.
+# ==========================================
+# THRIVE HUB AI DATA COLLECTION BLUEPRINT
+# ==========================================
+Build Your Real Intelligence Engine. 
+Turn every year of experience into an AI agent.
+
+CORE OPERATING LOGIC:
+1. STRUCTURED EXAMPLES: AI learns from structured cases.
+2. MASTER SYSTEM STRUCTURE: Organize data into 9 Core Vaults.
+   - Vault 1: Client Case Vault (Snapshots, Goals, Reasoning, Results)
+   - Vault 2: Decision Rules (If X + Y = Do Z logic)
+   - Vault 3: Tone of Voice (Arabic Egyptian style, English Executive style)
+   - Vault 4: Plan Library (Male Professional, Recomp, Burnout recovery, etc.)
+   - Vault 5: Mistakes & Lessons (Aggressive calories backfire, etc.)
+   - Vault 6: Knowledge Distillation ( frameworks from Atomic Habits, Why We Sleep, ISSN)
+   - Vault 7: Tools & Calculators (Macros, InBody interpretation)
+   - Vault 8: Content & Brand (Mission, Voice, LinkedIn hooks)
+   - Vault 9: Edge Cases (OCD traits, Mental exhaustion, Scale obsession)
+
+DAILY DATA FEED FORMULA:
+INPUT (Raw data) -> THINKING (What Hassan noticed) -> DECISION (What mattered) -> OUTPUT (Final plan) -> RESULT (Outcome).
+
+MISSION: After 200 entries, the AI becomes a "Black Box" of Hassan's elite coaching brain.
+# ==========================================
