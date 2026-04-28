@@ -1,5 +1,6 @@
 import streamlit as st
 import os
+import datetime
 from openai import OpenAI
 from dotenv import load_dotenv
 from PIL import Image
@@ -15,6 +16,24 @@ def load_hassan_brain():
             return f.read()
     except FileNotFoundError:
         return "Error: thrive_brain.txt not found."
+
+# THE BLACK BOX INJECTION ENGINE
+def append_to_black_box(case_data, plan_output):
+    timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+    new_entry = f"""
+# --- BLACK BOX INJECTION {timestamp} ---
+[VAULT 1 - CASE Snapshot]
+INPUT: {case_data}
+DECISION LOGIC: {plan_output}
+# ---------------------------------------
+"""
+    try:
+        with open("thrive_brain.txt", "a", encoding="utf-8") as f:
+            f.write(new_entry)
+        return True
+    except Exception as e:
+        st.error(f"Write Error: {e}")
+        return False
 
 hassan_context = load_hassan_brain()
 
@@ -39,9 +58,7 @@ st.markdown("""
         font-weight: 700;
     }
 
-    /* --- MOBILE RESPONSIVE LOGIC --- */
-    
-    /* Desktop Version (Default) */
+    /* --- RESPONSIVE BOX SYSTEM --- */
     .main-title-box {
         background-color: #1eb1b1;
         color: #ffffff !important;
@@ -64,24 +81,16 @@ st.markdown("""
         margin-top: 10px;
     }
 
-    /* Mobile Adjustments (Screen width less than 768px) */
     @media (max-width: 768px) {
         .main-title-box {
-            font-size: 1.4rem !important; /* Smaller text for mobile */
+            font-size: 1.4rem !important;
             padding: 10px 20px !important;
-            width: 90% !important; /* Prevent overlapping */
+            width: 90% !important;
             margin: 10px auto !important;
-        }
-        .tag-box {
-            font-size: 0.8rem !important;
-            padding: 5px 15px !important;
-        }
-        .stImage > img {
-            width: 70px !important; /* Smaller logo for mobile */
         }
     }
 
-    /* Button Consistency */
+    /* --- BUTTONS --- */
     div.stButton > button {
         width: 100% !important; 
         background-color: #1eb1b1 !important; 
@@ -95,6 +104,16 @@ st.markdown("""
         font-size: 1.1rem !important;
     }
 
+    /* Special Styling for Black Box Button */
+    .black-box-btn div.stButton > button {
+        background-color: #ffffff !important;
+        color: #103b4d !important;
+        margin-top: 25px !important;
+    }
+    .black-box-btn div.stButton > button p {
+        color: #103b4d !important;
+    }
+
     .stTextArea textarea { 
         background-color: #ffffff !important; 
         color: #103b4d !important; 
@@ -105,21 +124,17 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# 3. HEADER SECTION (Optimized for Mobile Stacking)
-# On mobile, Streamlit columns stack. We ensure the layout follows a clean order.
+# 3. HEADER
 if os.path.exists("Logo.png"):
     try:
         img = Image.open("Logo.png")
-        # Centering for mobile
         st.markdown('<div style="text-align: left;">', unsafe_allow_html=True)
         st.image(img, width=100)
         st.markdown('</div>', unsafe_allow_html=True)
-    except:
-        pass
+    except: pass
 
 st.markdown('<div class="tag-box">Plan Builder</div>', unsafe_allow_html=True)
 st.markdown('<div style="text-align: center; margin-top: 20px;"><div class="main-title-box">Thrive Hub Intelligence</div></div>', unsafe_allow_html=True)
-
 st.divider()
 
 # 4. MAIN INTERFACE
@@ -127,25 +142,27 @@ col_left, col_right = st.columns([1, 1.2], gap="large")
 
 with col_left:
     st.markdown("### Input Data")
-    client_data = st.text_area(
-        label="Paste Chat History or Assessment Data:", 
-        height=400, 
-        placeholder="e.g., Male, 39, Corporate role..."
-    )
+    client_data = st.text_area(label="Input Details:", height=400, placeholder="Paste details...")
     
     if st.button("Generate Plan"):
         if not client_data:
             st.warning("Please enter client data first.")
         else:
-            with st.spinner("Processing..."):
+            with st.spinner("Consulting the Brain..."):
                 try:
                     client = OpenAI(base_url="https://integrate.api.nvidia.com/v1", api_key=api_key)
-                    prompt = f"System: Use {hassan_context}. Input: {client_data}. Task: Generate Plan."
+                    prompt = f"""
+                    SYSTEM: You are the Thrive Hub Lead Strategist. 
+                    VAULT CONTEXT: {hassan_context}
+                    STRICTURES: Tone: Calm Operator. NO AI filler. Use 'Protein Anchors' & 'Metabolic Rhythm'.
+                    INPUT: {client_data}
+                    """
                     response = client.chat.completions.create(
                         model="meta/llama-3.1-405b-instruct",
                         messages=[{"role": "user", "content": prompt}]
                     )
                     st.session_state.result = response.choices[0].message.content
+                    st.session_state.last_input = client_data
                 except Exception as e:
                     st.error(f"Error: {e}")
 
@@ -153,7 +170,16 @@ with col_right:
     st.markdown("### Client's Most Suitable Plan")
     if 'result' in st.session_state:
         st.markdown(st.session_state.result)
+        
+        # THE BLACK BOX INJECTION
+        st.markdown('<div class="black-box-btn">', unsafe_allow_html=True)
+        if st.button("✅ Save to Black Box (Inject Logic)"):
+            if append_to_black_box(st.session_state.last_input, st.session_state.result):
+                st.balloons()
+                st.success("VAULT UPDATED: Logic Injected into the Black Box.")
+        st.markdown('</div>', unsafe_allow_html=True)
+        
         st.divider()
         st.code(st.session_state.result, language="markdown")
     else:
-        st.info("Results will appear here.")
+        st.info("Input data to predict burnout and build protocol.")
