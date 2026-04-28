@@ -37,3 +37,72 @@ INPUT (Raw data) -> THINKING (What Hassan noticed) -> DECISION (What mattered) -
 
 MISSION: After 200 entries, the AI becomes a "Black Box" of Hassan's elite coaching brain.
 # ==========================================
+
+# ==========================================
+# THRIVE HUB MASTER PROTOCOLS (from PDFs)
+# ==========================================
+
+[VAULT 4 - NUTRITION & FUELING SYSTEM]
+- CORE RULE: Protein in every single meal. No exceptions.
+- THE 3 PM SNACK (Non-Negotiable): Must stabilize blood sugar. 
+  Options: Greek yogurt + honey OR 1 Banana + 15g Peanut Butter.
+- TRAINING FUEL (30-45 min before): 1 Banana OR 2-3 Dates OR 1 Toast + 10g Honey.
+- RECOVERY WINDOW: Protein + Carbs must be consumed within 45 mins post-training.
+- HYDRATION: 500-750ml water during training + pinch of sea salt. Target 2-2.5L daily.
+
+[VAULT 4 - SLEEP & RECOVERY PROTOCOLS]
+- TARGETS: Don't force 8 hours. Week 1: 5 hrs consistently -> Week 2: 6 hrs -> Week 3: 7 hrs.
+- NIGHT ROUTINE: Phone away 45 mins before bed. Dim lights. Use rain sounds/lo-fi.
+- SUPPLEMENTS: 
+  * Magnesium Glycinate (For sleep, jaw clenching, and recovery).
+  * Vitamin D (For energy, mood, and immunity).
+  * Creatine & Omega 3 (Standard performance stack).
+- RECOVERY: End showers with 10-30 seconds of cold water.
+
+[VAULT 2 - DECISION RULES (THE ENGINE)]
+- RULE: If sleep < 6 hours OR high fatigue -> Keep training < 45 mins. Reduce intensity.
+- RULE: If "Red Day" (Exhausted) -> Pivot to 10 min walk + Sleep + Eat. No hard training.
+- RULE: If "Yellow Day" (Tired) -> Add extra snack + Light training.
+- STRESS RESET: 5-min reset (Walk outside + Cold water + One-sentence journal).
+
+[VAULT 3 - COACHING TONE]
+- "Motivation comes and goes. Routine stays."
+- "You are not lazy. You are just tired and overwhelmed."
+- "Success shouldn't come at the cost of health."
+# ==========================================
+
+# ==========================================
+# MASTER DATA VAULT: RECENT CASE PROTOCOLS
+# ==========================================
+
+[VAULT 1 - CLIENT PROFILES & CALORIES]
+- THE CORPORATE EXECUTIVE (Ahmed): 41yo, 175cm, 96kg. 
+  * Target: 2530 kcal | P: 175g | F: 80g | C: 280g.
+  * Goal: Fat loss without crashing energy for work.
+- THE ATHLETE RECOMP (Mohamed): High muscle mass, 110kg.
+  * Target: 1800-2400 kcal (Cycling between Training/Rest days).
+- THE REBUILD (Fateema): Focused on routine and "Comeback" logic.
+
+[VAULT 4 - MEAL SELECTIONS & TIMING]
+- BREAKFAST OPTIONS:
+  * Option A: 2 whole eggs + 2 whites + 150g Foul + 1 Baladi bread + Greens.
+  * Option B: 150g Greek Yogurt + 2 eggs + 60g Oats + 1 Banana + 15g Nuts.
+- THE 3 PM SNACK (Non-Negotiable): 
+  * 1 Banana + 15g Peanut Butter OR Greek Yogurt + Honey.
+- TRAINING FUEL:
+  * Pre-workout (30m before): 1 Banana OR 3 Dates OR 1 Toast + Honey.
+  * Post-workout (45m after): Protein + Carbs must be paired (e.g., Shake + Fruit).
+
+[VAULT 2 - HASSAN'S DECISION RULES]
+- CAFFEINE RULE: If stress is high and sleep is <6 hours, swap afternoon coffee for a 5-min walk/cold water reset.
+- CRAVING RULE: 1. Drink Water -> 2. Wait 10m -> 3. Eat Protein First.
+- TRAINING INTENSITY RULE: 
+  * Green Day (Feel good): Follow plan.
+  * Yellow Day (Tired): Add snack + keep training easy.
+  * Red Day (Exhausted): NO training. Walk + Eat + Sleep only.
+
+[VAULT 7 - CALCULATORS & RATIOS]
+- Protein Target: 1.8g to 2.2g per kg of bodyweight.
+- Water Target: 2.5L to 3L daily.
+- Step Target: 6,000 - 8,000 daily (Gradual increase).
+# ==========================================
