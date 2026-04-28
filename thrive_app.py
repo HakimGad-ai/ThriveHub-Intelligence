@@ -67,7 +67,10 @@ st.markdown("""
     .save-brain-btn div.stButton > button p { color: #103b4d !important; }
 
     .stTextArea textarea { background-color: #ffffff !important; color: #103b4d !important; border-radius: 8px; }
-    div[data-testid="stCodeBlock"] { display: none !important; }
+    
+    /* Improved Styling for the Copy Block */
+    .copy-label { margin-top: 30px; font-size: 0.8rem; opacity: 0.7; color: #ffffff; }
+    
     hr { border-top: 2px solid #1eb1b1; opacity: 0.2; }
     </style>
     """, unsafe_allow_html=True)
@@ -84,7 +87,7 @@ col_left, col_right = st.columns([1, 1.2], gap="large")
 
 with col_left:
     st.markdown("### Input Data")
-    client_data = st.text_area("Paste Input:", height=400, placeholder="e.g., Male, 39, Corporate role...")
+    client_data = st.text_area("Paste Input:", height=400, placeholder="e.g., Male, 41, 96kg, Corporate role...")
     
     if st.button("Generate Plan"):
         if not client_data:
@@ -92,21 +95,16 @@ with col_left:
         else:
             with st.spinner("Analyzing Training Bank..."):
                 try:
-                    # FIX: Using the most stable high-reasoning model endpoint
                     client = OpenAI(base_url="https://integrate.api.nvidia.com/v1", api_key=api_key)
                     prompt = f"""
-                    SYSTEM: You are the Thrive Hub Lead Strategist (Hassan).
+                    SYSTEM: You are the Thrive Hub Lead Strategist (Hassan). 
                     VAULT CONTEXT (Your Training Bank): 
                     {hassan_context}
                     
-                    STRICT INSTRUCTION: 
-                    Do NOT give general advice. Use the specific Nutrition, Training, and Sleep protocols found in the Vaults above.
-                    If the Vault is empty, focus on 'Protein Anchors' and 'Metabolic Rhythm' rules.
-                    
-                    FORMAT:
-                    1. Strategy Overview
-                    2. Specific Nutrition/Sleep Levers
-                    3. Arabic Summary (Egyptian Style)
+                    STRICT INSTRUCTIONS: 
+                    1. Use ONLY English. NO Arabic.
+                    2. Use the specific Ahmed/Fateema/Mohamed protocols for Nutrition and Sleep.
+                    3. Output MUST be clean markdown with clear headers.
                     
                     INPUT: {client_data}
                     """
@@ -117,17 +115,25 @@ with col_left:
                     st.session_state.result = response.choices[0].message.content
                     st.session_state.last_input = client_data
                 except Exception as e:
-                    st.error(f"API Connection Error: {e}")
+                    st.error(f"Error: {e}")
 
 with col_right:
     st.markdown("### Client's Most Suitable Plan")
     if 'result' in st.session_state:
+        # Display formatted version for reading
         st.markdown(st.session_state.result)
+        
+        # Save button
         st.markdown('<div class="save-brain-btn">', unsafe_allow_html=True)
         if st.button("Save to Brain"):
             if append_to_brain(st.session_state.last_input, st.session_state.result):
                 st.balloons()
                 st.success("Logic Injected into Brain.")
         st.markdown('</div>', unsafe_allow_html=True)
+        
+        # RESTORED COPY BLOCK
+        st.markdown('<p class="copy-label">Copy for WhatsApp/External Apps:</p>', unsafe_allow_html=True)
+        st.code(st.session_state.result, language="markdown")
+        
     else:
         st.markdown('<div style="margin-top: 40px;"><div class="mission-navy-box">Success Shouldn\'t Come at The Cost of Health</div></div>', unsafe_allow_html=True)
