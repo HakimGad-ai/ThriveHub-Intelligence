@@ -114,3 +114,18 @@ MANDATORY SEQUENCE:
    - The Plan: [Minimalist structure]
 
 MASTER RULE: If you cannot clearly identify the bottleneck, DO NOT build the plan.
+
+# ==========================================
+# SECTION 11 — BOTTLENECK VALIDATION RULES (FINAL)
+# ==========================================
+
+- MANDATE: No evidence = no bottleneck. No bottleneck = no plan.
+- RULE: Every selection must answer "What data supports this?". Do not guess.
+- RULE: Default to EXECUTION GAP if (Long history + Inconsistency + No major dysfunction).
+- RULE: Trigger NUTRITION STRUCTURE only if evidence shows chaos, low protein, or emotional eating.
+- RULE: Select ONE primary bottleneck only. Do not combine factors.
+- OUTPUT VALIDATION: 
+   1. Bottleneck
+   2. Evidence Supporting It
+   3. Priority Reasoning
+   4. Minimalist Plan

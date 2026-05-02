@@ -26,11 +26,11 @@ def append_to_brain(case_data, plan_output):
         st.error(f"Write Error: {e}")
         return False
 
-# Load Strategic Context
+# Load Strategic Context from External Vaults
 hassan_context = load_file("thrive_brain.txt")
 hassan_identity = load_file("thrive_identity.txt")
 
-# 2. BRANDED UI CONFIG (REINSTATED ORIGINAL)
+# 2. BRANDED UI CONFIG (LOCKED VERSION)
 st.set_page_config(page_title="Thrive Hub Intelligence", page_icon="⚡", layout="wide")
 
 st.markdown("""
@@ -84,44 +84,51 @@ with col_left:
     st.markdown("### Input Data")
     client_data = st.text_area("Paste Input:", height=400, placeholder="e.g., Hakim, 39, Perfectionist, Sleeps 7h but wakes twice...")
     
-    if st.button("Generate Plan"):
+    generate_btn = st.button("Generate Plan")
+
+with col_right:
+    st.markdown("### Decision Engine Output")
+    output_placeholder = st.empty()
+    
+    if generate_btn:
         if client_data:
             with st.spinner("Analyzing Root Causes..."):
                 try:
                     client = OpenAI(base_url="https://integrate.api.nvidia.com/v1", api_key=api_key)
                     system_message = f"IDENTITY: {hassan_identity}\nBRAIN LOGIC: {hassan_context}"
                     
+                    # SYSTEM STATE: Locked for 100% Consistency
                     response = client.chat.completions.create(
                         model="meta/llama-3.1-70b-instruct", 
                         messages=[
                             {"role": "system", "content": system_message},
                             {"role": "user", "content": f"Analyze and build strategy: {client_data}"}
                         ],
-                        temperature=0.1,
+                        temperature=0.0,  # CRITICAL: Zero variance
+                        seed=42,          # CRITICAL: Reproducible path
                         stream=True
                     )
                     
-                    with col_right:
-                        placeholder = st.empty()
-                        full_response = ""
-                        for chunk in response:
-                            if chunk.choices[0].delta.content:
-                                full_response += chunk.choices[0].delta.content
-                                placeholder.markdown(full_response + "▌")
-                        
-                        placeholder.markdown(full_response)
-                        st.session_state.result = full_response
-                        st.session_state.last_input = client_data
+                    full_response = ""
+                    for chunk in response:
+                        if chunk.choices[0].delta.content:
+                            full_response += chunk.choices[0].delta.content
+                            output_placeholder.markdown(full_response + "▌")
+                    
+                    output_placeholder.markdown(full_response)
+                    st.session_state.result = full_response
+                    st.session_state.last_input = client_data
                 except Exception as e:
                     st.error(f"Logic Error: {e}")
+        else:
+            st.warning("Please paste client data first.")
 
-with col_right:
-    st.markdown("### Decision Engine Output")
+    # 5. PERSISTENCE & ACTIONS
     if 'result' in st.session_state:
-        st.markdown(st.session_state.result)
+        output_placeholder.markdown(st.session_state.result)
         if st.button("Save to Brain"):
             if append_to_brain(st.session_state.last_input, st.session_state.result):
                 st.balloons(); st.success("Logic Injected into the Thrive Hub Brain.")
         st.code(st.session_state.result, language="markdown")
-    elif not client_data:
+    else:
         st.markdown('<div style="margin-top: 40px;"><div class="mission-navy-box">Success Shouldn\'t Come at The Cost of Health</div></div>', unsafe_allow_html=True)
