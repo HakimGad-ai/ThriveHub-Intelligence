@@ -1,6 +1,7 @@
 import streamlit as st
 import os
 import datetime
+import hashlib
 from openai import OpenAI
 from dotenv import load_dotenv
 
@@ -15,6 +16,9 @@ def load_file(filename):
     except FileNotFoundError:
         return f"Error: {filename} not found."
 
+def get_input_hash(text):
+    return hashlib.md5(text.encode()).hexdigest()
+
 def append_to_brain(case_data, plan_output):
     ts = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
     entry = f"\n# --- BRAIN INJECTION {ts} ---\nINPUT: {case_data}\nOUTPUT: {plan_output}\n# ------------------\n"
@@ -26,20 +30,23 @@ def append_to_brain(case_data, plan_output):
         st.error(f"Write Error: {e}")
         return False
 
-# Load Strategic Context from External Vaults
+# Load Context
 hassan_context = load_file("thrive_brain.txt")
 hassan_identity = load_file("thrive_identity.txt")
 
-# 2. BRANDED UI CONFIG (LOCKED VERSION)
+# 2. BRANDED UI CONFIG
 st.set_page_config(page_title="Thrive Hub Intelligence", page_icon="⚡", layout="wide")
 
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800&display=swap');
+    
     html, body, [class*="st-"] { font-family: 'Montserrat', sans-serif !important; }
     .stApp { background-color: #103b4d; color: #FFFFFF; }
-    h1, h2, h3, h4, h5, h6, label, p, .stMarkdown { color: #FFFFFF !important; font-weight: 700; }
     
+    /* TARGETED BRAND STYLING */
+    .stMarkdown p, h1, h2, h3, h4 { color: #FFFFFF !important; font-weight: 700 !important; }
+
     .main-title-box {
         background-color: #1eb1b1; color: #ffffff !important;
         padding: 15px 40px; border-radius: 8px;
@@ -55,20 +62,49 @@ st.markdown("""
         padding: 12px 25px; border-radius: 8px;
         font-weight: 800; display: inline-block; font-size: 1.1rem;
         border: 1px solid rgba(30, 177, 177, 0.3);
+        margin-top: 40px;
     }
-    @media (max-width: 768px) {
-        .main-title-box { font-size: 1.4rem !important; width: 95% !important; padding: 10px !important; }
-        .mission-navy-box { font-size: 0.9rem !important; width: 100%; text-align: center; }
-    }
+
     div.stButton > button {
         width: 100% !important; background-color: #1eb1b1 !important; 
         border-radius: 8px !important; height: 4em !important; border: none !important;
     }
-    div.stButton > button p { color: #ffffff !important; font-weight: 800 !important; font-size: 1.1rem !important; }
+    div.stButton > button p { color: #ffffff !important; font-weight: 800 !important; }
+
     .stTextArea textarea { background-color: #ffffff !important; color: #103b4d !important; border-radius: 8px; }
-    hr { border-top: 2px solid #1eb1b1; opacity: 0.2; }
+
+    /* --- UPLOADER VISIBILITY FIX --- */
+    [data-testid="stFileUploader"] {
+        background-color: #f0f2f6 !important;
+        padding: 15px !important;
+        border-radius: 8px !important;
+    }
+    
+    /* TARGETING THE LABEL TO BE BLACK */
+    [data-testid="stFileUploader"] label p {
+        color: #000000 !important; 
+        font-weight: 700 !important;
+    }
+
+    [data-testid="stFileUploader"] button div {
+        color: transparent !important;
+        display: none !important;
+    }
+    [data-testid="stFileUploader"] button::after {
+        content: "Browse Files";
+        color: #31333f !important;
+        font-weight: 400 !important;
+    }
+    [data-testid="stFileUploader"] * {
+        color: #31333f !important;
+        font-weight: 400 !important;
+        text-shadow: none !important;
+    }
     </style>
     """, unsafe_allow_html=True)
+
+if 'history_cache' not in st.session_state:
+    st.session_state.history_cache = {}
 
 # 3. HEADER
 if os.path.exists("Logo.png"):
@@ -82,8 +118,13 @@ col_left, col_right = st.columns([1, 1.2], gap="large")
 
 with col_left:
     st.markdown("### Input Data")
-    client_data = st.text_area("Paste Input:", height=400, placeholder="e.g., Hakim, 39, Perfectionist, Sleeps 7h but wakes twice...")
+    # REVERTED PLACEHOLDER
+    client_data = st.text_area("Paste Input:", height=300, placeholder="e.g., Hakim, 39, Perfectionist, Sleeps 7h but wakes twice...")
     
+    uploaded_file = st.file_uploader("Upload Client Material (Scans, PDF, Images)", type=["pdf", "png", "jpg", "jpeg"])
+    if uploaded_file is not None:
+        st.success(f"Attached: {uploaded_file.name}")
+
     generate_btn = st.button("Generate Plan")
 
 with col_right:
@@ -92,43 +133,37 @@ with col_right:
     
     if generate_btn:
         if client_data:
-            with st.spinner("Analyzing Root Causes..."):
-                try:
-                    client = OpenAI(base_url="https://integrate.api.nvidia.com/v1", api_key=api_key)
-                    system_message = f"IDENTITY: {hassan_identity}\nBRAIN LOGIC: {hassan_context}"
-                    
-                    # SYSTEM STATE: Locked for 100% Consistency
-                    response = client.chat.completions.create(
-                        model="meta/llama-3.1-70b-instruct", 
-                        messages=[
-                            {"role": "system", "content": system_message},
-                            {"role": "user", "content": f"Analyze and build strategy: {client_data}"}
-                        ],
-                        temperature=0.0,  # CRITICAL: Zero variance
-                        seed=42,          # CRITICAL: Reproducible path
-                        stream=True
-                    )
-                    
-                    full_response = ""
-                    for chunk in response:
-                        if chunk.choices[0].delta.content:
-                            full_response += chunk.choices[0].delta.content
-                            output_placeholder.markdown(full_response + "▌")
-                    
-                    output_placeholder.markdown(full_response)
-                    st.session_state.result = full_response
-                    st.session_state.last_input = client_data
-                except Exception as e:
-                    st.error(f"Logic Error: {e}")
-        else:
-            st.warning("Please paste client data first.")
+            input_hash = get_input_hash(client_data)
+            if input_hash in st.session_state.history_cache:
+                cached_result = st.session_state.history_cache[input_hash]
+                output_placeholder.markdown(cached_result)
+                st.session_state.result = cached_result
+            else:
+                with st.spinner("Analyzing..."):
+                    try:
+                        client = OpenAI(base_url="https://integrate.api.nvidia.com/v1", api_key=api_key)
+                        system_message = f"IDENTITY: {hassan_identity}\nBRAIN LOGIC: {hassan_context}"
+                        response = client.chat.completions.create(
+                            model="meta/llama-3.1-70b-instruct", 
+                            messages=[{"role": "system", "content": system_message}, {"role": "user", "content": client_data}],
+                            temperature=0.0, top_p=0.01, seed=42, stream=True
+                        )
+                        full_response = ""
+                        for chunk in response:
+                            if chunk.choices[0].delta.content:
+                                full_response += chunk.choices[0].delta.content
+                                output_placeholder.markdown(full_response + "▌")
+                        output_placeholder.markdown(full_response)
+                        st.session_state.result = full_response
+                        st.session_state.history_cache[input_hash] = full_response
+                    except Exception as e:
+                        st.error(f"Logic Error: {e}")
 
-    # 5. PERSISTENCE & ACTIONS
     if 'result' in st.session_state:
         output_placeholder.markdown(st.session_state.result)
         if st.button("Save to Brain"):
-            if append_to_brain(st.session_state.last_input, st.session_state.result):
-                st.balloons(); st.success("Logic Injected into the Thrive Hub Brain.")
+            append_to_brain(client_data, st.session_state.result)
+            st.balloons()
         st.code(st.session_state.result, language="markdown")
     else:
-        st.markdown('<div style="margin-top: 40px;"><div class="mission-navy-box">Success Shouldn\'t Come at The Cost of Health</div></div>', unsafe_allow_html=True)
+        st.markdown('<div class="mission-navy-box">Success Shouldn\'t Come at The Cost of Health</div>', unsafe_allow_html=True)
